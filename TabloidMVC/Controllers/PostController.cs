@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
+using System.Collections.Generic;
 using System.Security.Claims;
+using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 
@@ -13,17 +15,28 @@ namespace TabloidMVC.Controllers
     {
         private readonly PostRepository _postRepository;
         private readonly CategoryRepository _categoryRepository;
+        private readonly UserProfileRepository _userProfileRepository;
+
 
         public PostController(IConfiguration config)
         {
             _postRepository = new PostRepository(config);
             _categoryRepository = new CategoryRepository(config);
+            _userProfileRepository = new UserProfileRepository(config);
         }
 
         public IActionResult Index()
         {
             var posts = _postRepository.GetAllPublishedPosts();
             return View(posts);
+        }
+
+        public IActionResult UserIndex()
+        {
+            int UserProfileId = GetCurrentUserProfileId();
+
+            List<Post> userPost = _postRepository.GetAllPostByUserId(UserProfileId);
+            return View(userPost);
         }
 
         public IActionResult Details(int id)
