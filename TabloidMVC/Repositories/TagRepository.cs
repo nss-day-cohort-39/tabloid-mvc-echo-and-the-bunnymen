@@ -34,6 +34,7 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+
         public void Add(Tag tag)
         {
             using (var conn = Connection)
@@ -48,10 +49,10 @@ namespace TabloidMVC.Repositories
                         VALUES (
                             @id, @name)";
 
-                    cmd.Parameters.AddWithValue("@id", Tag.Id);
-                    cmd.Parameters.AddWithValue("@name", Tag.Name);
+                    cmd.Parameters.AddWithValue("@id", tag.Id);
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
 
-                    Tag.Id = (int)cmd.ExecuteScalar();
+                    tag.Id = (int)cmd.ExecuteScalar();
                 }
             }
         }

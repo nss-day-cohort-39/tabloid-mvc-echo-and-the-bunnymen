@@ -57,18 +57,16 @@ namespace TabloidMVC.Controllers
             return View();
         }
 
-        [HttpTag]
+        [HttpPost]
         public IActionResult Create(Tag tag)
         {
             try
-            {
-                // update the dogs OwnerId to the current user's Id 
-                tag.Id = GetCurrentUserProfileId();
-
-                _tagRepository.AddTag(tag);
+            {                
+                _tagRepository.Add(tag);
 
                 return RedirectToAction("Index");
             }
+
             catch (Exception ex)
             {
                 return View(tag);
