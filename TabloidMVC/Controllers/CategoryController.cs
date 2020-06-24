@@ -53,31 +53,27 @@ namespace TabloidMVC.Controllers
         //    return View(category);
         //}
 
-        //public IActionResult Create()
+        public IActionResult Create()
+        {
+            
+            return View();
+        }
+
+        //[HttpPost]
+        //public IActionResult Create(Category category)
         //{
-        //    var vm = new CategoryCreateViewModel();
-        //    vm.CategoryOptions = _categoryRepository.GetAll();
-        //    return View(vm);
-        //}
+        //    //try
+        //    //{
+     
+        //    //    _categoryRepository.Add(vm.Category);
 
-        //[HttpCategory]
-        //public IActionResult Create(CategoryCreateViewModel vm)
-        //{
-        //    try
-        //    {
-        //        vm.Category.CreateDateTime = DateAndTime.Now;
-        //        vm.Category.IsApproved = true;
-        //        vm.Category.UserProfileId = GetCurrentUserProfileId();
-
-        //        _categoryRepository.Add(vm.Category);
-
-        //        return RedirectToAction("Details", new { id = vm.Category.Id });
-        //    }
-        //    catch
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        return View(vm);
-        //    }
+        //    //    return RedirectToAction("Details", new { id = vm.Category.Id });
+        //    //}
+        //    //catch
+        //    //{
+        //    //    vm.CategoryOptions = _categoryRepository.GetAll();
+        //    //    return View(vm);
+        //    //}
         //}
 
         // GET: Categorys/Edit/5
