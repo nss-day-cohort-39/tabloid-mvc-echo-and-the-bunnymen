@@ -80,6 +80,33 @@ namespace TabloidMVC.Controllers
                 return View(vm);
             }
         }
+        // GET: PostController/Delete/5
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            int userId = GetCurrentUserProfileId();
+            Post post = _postRepository.GetUserPostById(id, userId);
+
+            return View(post);
+        }
+
+        // POST: PostController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Post post)
+        {
+            try
+            {
+                _postRepository.DeletePost(id);
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(post);
+            }
+        }
+
 
         private int GetCurrentUserProfileId()
         {
