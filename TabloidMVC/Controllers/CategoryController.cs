@@ -59,22 +59,20 @@ namespace TabloidMVC.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public IActionResult Create(Category category)
-        //{
-        //    //try
-        //    //{
-     
-        //    //    _categoryRepository.Add(vm.Category);
+        [HttpPost]
+        public IActionResult Create(Category category)
+        {
+            try
+            {
+                _categoryRepository.Add(category);
 
-        //    //    return RedirectToAction("Details", new { id = vm.Category.Id });
-        //    //}
-        //    //catch
-        //    //{
-        //    //    vm.CategoryOptions = _categoryRepository.GetAll();
-        //    //    return View(vm);
-        //    //}
-        //}
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(category);
+            }
+        }
 
         // GET: Categorys/Edit/5
         //[Authorize]
