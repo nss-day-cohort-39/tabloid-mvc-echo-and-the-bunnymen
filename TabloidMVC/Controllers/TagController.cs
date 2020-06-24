@@ -124,38 +124,37 @@ namespace TabloidMVC.Controllers
         //    }
         //}
 
-        //// GET: TagController/Delete/5
-        //[Authorize]
-        //public ActionResult Delete(int id)
-        //{
-        //    int userId = GetCurrentUserProfileId();
-        //    Tag tag = _tagRepository.GetUserTagById(id, userId);
+        // GET: Tag/Delete/5
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            Tag tag = _tagRepository.GetTagById(id);
 
-        //    return View(tag);
-        //}
+            return View(tag);
+        }
 
-        //// POST: TagController/Delete/5
-        //[HttpTag]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, Tag tag)
-        //{
-        //    try
-        //    {
-        //        _tagRepository.DeleteTag(id);
+        // POST: Tag/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Tag tag)
+        {
+            try
+            {
+                _tagRepository.DeleteTag(id);
 
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View(tag);
-        //    }
-        //}
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(tag);
+            }
+        }
 
 
-//        private int GetCurrentUserProfileId()
-//        {
-//            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-//            return int.Parse(id);
-//        }
-     }
+        //        private int GetCurrentUserProfileId()
+        //        {
+        //            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //            return int.Parse(id);
+        //        }
+    }
   }
