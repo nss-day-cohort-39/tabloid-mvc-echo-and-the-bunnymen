@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using TabloidMVC.Models;
@@ -80,6 +81,52 @@ namespace TabloidMVC.Controllers
                 return View(vm);
             }
         }
+
+        // GET: Posts/Edit/5
+        [Authorize]
+        public ActionResult Edit(int id)
+        {
+            int currentPostId = GetCurrentUserProfileId();
+            Post post = _postRepository.GetUserPostById(id, currentPostId);
+            List<Category> CategoryList = _categoryRepository.GetAll();
+            PostCreateViewModel vm = new PostCreateViewModel
+            {
+                Post = post,
+                CategoryOptions = CategoryList
+            };
+            if (vm.Post == null)
+            {
+                return NotFound();
+            }
+            if (currentPostId != vm.Post.UserProfileId)
+            {
+                return NotFound();
+            }
+            return View(vm);
+        }
+
+        // POST: Post/Edit/5
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, PostCreateViewModel vm)
+        {
+            try
+            {
+                vm.CategoryOptions = _categoryRepository.GetAll();
+                vm.Post.Id = id;
+                vm.Post.CreateDateTime = DateTime.Now;
+                _postRepository.UpdatePost(vm.Post);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                vm.CategoryOptions = _categoryRepository.GetAll();
+                return View(vm);
+            }
+        }
+
         // GET: PostController/Delete/5
         [Authorize]
         public ActionResult Delete(int id)
