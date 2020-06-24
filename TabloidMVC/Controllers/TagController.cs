@@ -52,26 +52,26 @@ namespace TabloidMVC.Controllers
         //    return View(tag);
         //}
 
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        //[HttpPost]
-        //public IActionResult Create(Tag tag)
-        //{
-        //    try
-        //    {                
-        //        _tagRepository.Add(tag);
+        [HttpPost]
+        public IActionResult Create(Tag tag)
+        {
+            try
+            {
+                _tagRepository.Add(tag);
 
-        //        return RedirectToAction("Index");
-        //    }
+                return RedirectToAction("Index");
+            }
 
-        //    catch (Exception ex)
-        //    {
-        //        return View(tag);
-        //    }
-        //}
+            catch (Exception ex)
+            {
+                return View(tag);
+            }
+        }
 
         //// GET: Tags/Edit/5
         //[Authorize]

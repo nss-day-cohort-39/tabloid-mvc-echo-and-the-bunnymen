@@ -44,19 +44,19 @@ namespace TabloidMVC.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        INSERT INTO Post (
-                            Id, Name)
+                        INSERT INTO Tag (
+                            Name)
                         OUTPUT INSERTED.ID
                         VALUES (
-                            @id, @name)";
+                            @name)";
 
-                    cmd.Parameters.AddWithValue("@id", tag.Id);
                     cmd.Parameters.AddWithValue("@name", tag.Name);
 
                     tag.Id = (int)cmd.ExecuteScalar();
                 }
             }
         }
+
         public Tag GetTagById(int id)
         {
             using (SqlConnection conn = Connection)
