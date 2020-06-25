@@ -106,31 +106,31 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: CategoryController/Delete/5
-        //[Authorize]
-        //public ActionResult Delete(int id)
-        //{
-        //    int userId = GetCurrentUserProfileId();
-        //    Category category = _categoryRepository.GetUserCategoryById(id, userId);
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            
+            Category category = _categoryRepository.GetCategoryById(id);
 
-        //    return View(category);
-        //}
+            return View(category);
+        }
 
-        //// POST: CategoryController/Delete/5
-        //[HttpCategory]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, Category category)
-        //{
-        //    try
-        //    {
-        //        _categoryRepository.DeleteCategory(id);
+        // POST: CategoryController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Category category)
+        {
+            try
+            {
+                _categoryRepository.DeleteCategory(id);
 
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View(category);
-        //    }
-        //}
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(category);
+            }
+        }
 
 
         private int GetCurrentUserProfileId()

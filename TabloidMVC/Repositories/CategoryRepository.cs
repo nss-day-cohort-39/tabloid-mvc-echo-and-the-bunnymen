@@ -35,39 +35,25 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-        public Category GetCategoryById(int id)
+        public void UpdateCategory(Category category)
         {
-            using (var conn = Connection)
+            using (SqlConnection conn = Connection)
             {
                 conn.Open();
-                using (var cmd = conn.CreateCommand())
+                using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                       SELECT Name
-                        FROM Category
-                        WHERE Id = @id";
-
-                    cmd.Parameters.AddWithValue("@id", id);
-     
-                    var reader = cmd.ExecuteReader();
-
-                    Category category = null;
-
-                    if (reader.Read())
-                    {
-                        category = new Category
-                        {
-                            Id = id,
-                            Name = reader.GetString(reader.GetOrdinal("Name"))
-                        };
-                    }
-
-                    reader.Close();
-
-                    return category;
+                            UPDATE Category
+                            SET
+                                Name = @name
+                            WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@name", category.Name);
+                    cmd.Parameters.AddWithValue("@id", category.Id);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
+
         public void Add(Category category)
         {
             using (var conn = Connection)
@@ -77,7 +63,7 @@ namespace TabloidMVC.Repositories
                 {
                     cmd.CommandText = @"
                         INSERT INTO Category (Name)
-                        OUTPUT INSERTED.ID
+                        OUTPUT INSERTED.Id
                         VALUES (@name)";
                             
                     cmd.Parameters.AddWithValue("@name", category.Name);
@@ -87,7 +73,8 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-        public void UpdateCategory(Category category)
+
+        public Category GetCategoryById(int id)
         {
             using (SqlConnection conn = Connection)
             {
@@ -96,16 +83,50 @@ namespace TabloidMVC.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                            UPDATE Category
-                            SET 
-                                Name = @name
-                            WHERE Id = @id";
+                        SELECT Id, [Name]
+                        FROM Category
+                        WHERE Id = @id";
 
-                    cmd.Parameters.AddWithValue("@name", category.Name);
-                    cmd.Parameters.AddWithValue("@id", category.Id);
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        var category = new Category()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+
+                        reader.Close();
+                        return category;
+                    }
+
+                    reader.Close();
+                    return null;
                 }
             }
+        }
+
+        public void DeleteCategory(int categoryId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+
+                            DELETE FROM Category
+                            WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", categoryId);
+                    cmd.ExecuteNonQuery();
+                } 
+            } 
         }
     }
 }
