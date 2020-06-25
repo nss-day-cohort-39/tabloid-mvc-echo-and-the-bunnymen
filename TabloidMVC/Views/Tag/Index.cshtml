@@ -12,6 +12,7 @@
 <table class="table">
     <thead>
         <tr>
+           
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
@@ -20,6 +21,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <div class="form-group">
+                <input type="hidden" asp-for="@item.Id" class="form-control" />
+            </div>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>

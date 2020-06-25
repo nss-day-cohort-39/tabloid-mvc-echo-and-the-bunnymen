@@ -52,32 +52,26 @@ namespace TabloidMVC.Controllers
         //    return View(tag);
         //}
 
-        //public IActionResult Create()
-        //{
-        //    var vm = new TagCreateViewModel();
-        //    vm.CategoryOptions = _categoryRepository.GetAll();
-        //    return View(vm);
-        //}
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        //[HttpTag]
-        //public IActionResult Create(TagCreateViewModel vm)
-        //{
-        //    try
-        //    {
-        //        vm.Tag.CreateDateTime = DateAndTime.Now;
-        //        vm.Tag.IsApproved = true;
-        //        vm.Tag.UserProfileId = GetCurrentUserProfileId();
+        [HttpPost]
+        public IActionResult Create(Tag tag)
+        {
+            try
+            {
+                _tagRepository.Add(tag);
 
-        //        _tagRepository.Add(vm.Tag);
+                return RedirectToAction("Index");
+            }
 
-        //        return RedirectToAction("Details", new { id = vm.Tag.Id });
-        //    }
-        //    catch
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        return View(vm);
-        //    }
-        //}
+            catch (Exception ex)
+            {
+                return View(tag);
+            }
+        }
 
         //// GET: Tags/Edit/5
         //[Authorize]
@@ -151,10 +145,11 @@ namespace TabloidMVC.Controllers
         }
 
 
-        //        private int GetCurrentUserProfileId()
-        //        {
-        //            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //            return int.Parse(id);
-        //        }
+        private int GetCurrentUserProfileId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
+        }
     }
-  }
+}
+

@@ -68,7 +68,7 @@ namespace TabloidMVC.Controllers
             try
             {
                 vm.Post.CreateDateTime = DateAndTime.Now;
-                vm.Post.IsApproved = true;
+                vm.Post.IsApproved = true; 
                 vm.Post.UserProfileId = GetCurrentUserProfileId();
 
                 _postRepository.Add(vm.Post);
@@ -153,7 +153,6 @@ namespace TabloidMVC.Controllers
                 return View(post);
             }
         }
-
 
         private int GetCurrentUserProfileId()
         {
