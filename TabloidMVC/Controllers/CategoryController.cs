@@ -119,18 +119,18 @@ namespace TabloidMVC.Controllers
         //    }
         //}
 
-        GET: CategoryController/Delete/5
+        // GET: CategoryController/Delete/5
         [Authorize]
         public ActionResult Delete(int id)
         {
-            int userId = GetCurrentUserProfileId();
-            Category category = _categoryRepository.GetUserCategoryById(id, userId);
+            
+            Category category = _categoryRepository.GetCategoryById(id);
 
             return View(category);
         }
 
         // POST: CategoryController/Delete/5
-        [HttpCategory]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Category category)
         {
