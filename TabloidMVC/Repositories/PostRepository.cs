@@ -205,7 +205,7 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-
+        // 
         private Post NewPostFromReader(SqlDataReader reader)
         {
             return new Post()
