@@ -12,7 +12,7 @@ namespace TabloidMVC.Repositories
     public class CommentRepository : BaseRepository
     {
         public CommentRepository(IConfiguration config) : base(config) { }
-        public List<Comment> GetAllComments()
+        public List<Comment> GetCommentByPostId(int id)
         {
             using (var conn = Connection)
             {
@@ -20,23 +20,19 @@ namespace TabloidMVC.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                       SELECT p.Id, p.Title, p.Content, 
-                              p.ImageLocation AS HeaderImage,
-                              p.CreateDateTime, p.PublishDateTime, p.IsApproved,
-                              p.CategoryId, p.UserProfileId,
-                              c.[Name] AS CategoryName,
-                              u.FirstName, u.LastName, u.DisplayName, 
-                              u.Email, u.CreateDateTime, u.ImageLocation AS AvatarImage,
-                              u.UserTypeId, 
-                              ut.[Name] AS UserTypeName
-                         FROM Post p
-                              LEFT JOIN Category c ON p.CategoryId = c.id
-                              LEFT JOIN UserProfile u ON p.UserProfileId = u.id
-                              LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()
-                        ORDER BY PublishDateTime DESC
+                       SELECT comment.Id, 
+                              comment.Subject, 
+                              comment.Content, 
+                              comment.CreateDateTime,
+                              p.UserProfileId,
+                              u.DisplayName 
+                         FROM Comment comment
+                              LEFT JOIN Post p ON p.Id = comment.PostId
+                              LEFT JOIN UserProfile u ON u.Id = comment.UserProfileId
+                        WHERE comment.Id = @id
+                        ORDER BY CreateDateTime DESC
                         ";
-
+                    cmd.Parameters.AddWithValue("@id", id);
                     var reader = cmd.ExecuteReader();
 
                     var comments = new List<Comment>();
@@ -53,46 +49,46 @@ namespace TabloidMVC.Repositories
             }
         }
 
-        public Comment GetCommentById(int id)
-        {
-            using (var conn = Connection)
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"
-                       SELECT p.Id, p.Title, p.Content, 
-                              p.ImageLocation AS HeaderImage,
-                              p.CreateDateTime, p.PublishDateTime, p.IsApproved,
-                              p.CategoryId, p.UserProfileId,
-                              c.[Name] AS CategoryName,
-                              u.FirstName, u.LastName, u.DisplayName, 
-                              u.Email, u.CreateDateTime, u.ImageLocation AS AvatarImage,
-                              u.UserTypeId, 
-                              ut.[Name] AS UserTypeName
-                         FROM Post p
-                              LEFT JOIN Category c ON p.CategoryId = c.id
-                              LEFT JOIN UserProfile u ON p.UserProfileId = u.id
-                              LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()
-                              AND p.id = @id";
+        //public Comment GetCommentByPostId(int id)
+        //{
+        //    using (var conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (var cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @"
+        //               SELECT p.Id, p.Title, p.Content, 
+        //                      p.ImageLocation AS HeaderImage,
+        //                      p.CreateDateTime, p.PublishDateTime, p.IsApproved,
+        //                      p.CategoryId, p.UserProfileId,
+        //                      c.[Name] AS CategoryName,
+        //                      u.FirstName, u.LastName, u.DisplayName, 
+        //                      u.Email, u.CreateDateTime, u.ImageLocation AS AvatarImage,
+        //                      u.UserTypeId, 
+        //                      ut.[Name] AS UserTypeName
+        //                 FROM Post p
+        //                      LEFT JOIN Category c ON p.CategoryId = c.id
+        //                      LEFT JOIN UserProfile u ON p.UserProfileId = u.id
+        //                      LEFT JOIN UserType ut ON u.UserTypeId = ut.id
+        //                WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()
+        //                      AND p.id = @id";
 
-                    cmd.Parameters.AddWithValue("@id", id);
-                    var reader = cmd.ExecuteReader();
+        //            cmd.Parameters.AddWithValue("@id", id);
+        //            var reader = cmd.ExecuteReader();
 
-                    Comment comment = null;
+        //            Comment comment = null;
 
-                    if (reader.Read())
-                    {
-                        comment = NewCommentFromReader(reader);
-                    }
+        //            if (reader.Read())
+        //            {
+        //                comment = NewCommentFromReader(reader);
+        //            }
 
-                    reader.Close();
+        //            reader.Close();
 
-                    return comment;
-                }
-            }
-        }
+        //            return comment;
+        //        }
+        //    }
+        //}
 
         public Comment GetUserCommentById(int id, int userProfileId)
         {
@@ -193,7 +189,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@Subject", comment.Subject);
                     cmd.Parameters.AddWithValue("@Content", comment.Content);
                     cmd.Parameters.AddWithValue("@CreateDateTime", comment.CreateDateTime);
-                    cmd.Parameters.AddWithValue("@UserProfileId", comment.UserProfile);
+                    cmd.Parameters.AddWithValue("@UserProfileId", comment.UserProfileId);
 
                     comment.Id = (int)cmd.ExecuteScalar();
                 }
@@ -205,24 +201,12 @@ namespace TabloidMVC.Repositories
             return new Comment()
             {
                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                Subject = reader.GetString(reader.GetOrdinal("Title")),
+                Subject = reader.GetString(reader.GetOrdinal("Subject")),
                 Content = reader.GetString(reader.GetOrdinal("Content")),
                 CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                 UserProfile = new UserProfile()
                 {
-                    Id = reader.GetInt32(reader.GetOrdinal("UserProfileId")),
-                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
                     DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
-                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                    CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
-                    ImageLocation = DbUtils.GetNullableString(reader, "AvatarImage"),
-                    UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
-                    UserType = new UserType()
-                    {
-                        Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
-                        Name = reader.GetString(reader.GetOrdinal("UserTypeName"))
-                    }
                 }
             };
         }
@@ -247,7 +231,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@subject", comment.Subject);
                     cmd.Parameters.AddWithValue("@content", comment.Content);
                     cmd.Parameters.AddWithValue("@createDateTime", comment.CreateDateTime);
-                    cmd.Parameters.AddWithValue("@userProfile", comment.UserProfile);
+                    cmd.Parameters.AddWithValue("@userProfile", comment.UserProfileId);
                     cmd.Parameters.AddWithValue("@id", comment.Id);
                     cmd.ExecuteNonQuery();
                 }

@@ -24,10 +24,12 @@ namespace TabloidMVC.Controllers
             _userProfileRepository = new UserProfileRepository(config);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int id)
         {
-            var comments = _commentRepository.GetAllComments();
-            return View(comments);
+            CommentCreateViewModel vm = new CommentCreateViewModel();
+            var comments = _commentRepository.GetCommentByPostId(id);
+            vm.Comment = comments;
+            return View(vm);
         }
 
         public IActionResult UserIndex()
@@ -36,21 +38,6 @@ namespace TabloidMVC.Controllers
 
             List<Comment> userComment = _commentRepository.GetAllCommentsByUserId(UserProfileId);
             return View(userComment);
-        }
-
-        public IActionResult Details(int id)
-        {
-            var post = _commentRepository.GetCommentById(id);
-            if (post == null)
-            {
-                int userId = GetCurrentUserProfileId();
-                post = _commentRepository.GetUserCommentById(id, userId);
-                if (post == null)
-                {
-                    return NotFound();
-                }
-            }
-            return View(post);
         }
 
         public IActionResult Create()
