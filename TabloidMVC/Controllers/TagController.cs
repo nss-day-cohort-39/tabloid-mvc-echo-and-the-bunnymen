@@ -79,7 +79,7 @@ namespace TabloidMVC.Controllers
         {
             Tag tag = _tagRepository.GetTagById(id);  
             
-            if(tag == null)
+            if (tag == null)
             {
                 return NotFound();
             }
