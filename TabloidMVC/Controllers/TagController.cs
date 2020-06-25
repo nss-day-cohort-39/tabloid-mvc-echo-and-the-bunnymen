@@ -73,50 +73,37 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        //// GET: Tags/Edit/5
-        //[Authorize]
-        //public ActionResult Edit(int id)
-        //{
-        //    int currentTagId = GetCurrentUserProfileId();
-        //    Tag tag = _tagRepository.GetUserTagById(id, currentTagId);
-        //    List<Category> CategoryList = _categoryRepository.GetAll();
-        //    TagCreateViewModel vm = new TagCreateViewModel
-        //    {
-        //        Tag = tag,
-        //        CategoryOptions = CategoryList
-        //    };
-        //    if (vm.Tag == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    if (currentTagId != vm.Tag.UserProfileId)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(vm);
-        //}
+        // GET: Tags/Edit/5
+        [Authorize]
+        public ActionResult Edit(int id)
+        {
+            Tag tag = _tagRepository.GetTagById(id);  
+            
+            if (tag == null)
+            {
+                return NotFound();
+            }
 
-        //// POST: Tag/Edit/5
-        //[Authorize]
-        //[HttpTag]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, TagCreateViewModel vm)
-        //{
-        //    try
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        vm.Tag.Id = id;
-        //        vm.Tag.CreateDateTime = DateTime.Now;
-        //        _tagRepository.UpdateTag(vm.Tag);
+            return View(tag);
+        }
 
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        return View(vm);
-        //    }
-        //}
+        // POST: Tag/Edit/5
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Tag tag)
+        {
+            try
+            {
+                _tagRepository.UpdateTag(tag);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(tag);
+            }
+        }
 
         // GET: Tag/Delete/5
         [Authorize]

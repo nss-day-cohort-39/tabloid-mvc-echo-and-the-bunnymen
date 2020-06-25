@@ -35,6 +35,25 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+        public void UpdateCategory(Category category)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Category
+                            SET
+                                Name = @name
+                            WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@name", category.Name);
+                    cmd.Parameters.AddWithValue("@id", category.Id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public void Add(Category category)
         {
             using (var conn = Connection)
@@ -99,16 +118,15 @@ namespace TabloidMVC.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
+
                             DELETE FROM Category
                             WHERE Id = @id
                         ";
 
                     cmd.Parameters.AddWithValue("@id", categoryId);
-
                     cmd.ExecuteNonQuery();
-                }
-            }
+                } 
+            } 
         }
-
     }
 }

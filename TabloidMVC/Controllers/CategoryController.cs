@@ -74,50 +74,36 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        // GET: Categorys/Edit/5
-        //[Authorize]
-        //public ActionResult Edit(int id)
-        //{
-        //    int currentCategoryId = GetCurrentUserProfileId();
-        //    Category category = _categoryRepository.GetUserCategoryById(id, currentCategoryId);
-        //    List<Category> CategoryList = _categoryRepository.GetAll();
-        //    CategoryCreateViewModel vm = new CategoryCreateViewModel
-        //    {
-        //        Category = category,
-        //        CategoryOptions = CategoryList
-        //    };
-        //    if (vm.Category == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    if (currentCategoryId != vm.Category.UserProfileId)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(vm);
-        //}
+        //GET: Categorys/Edit/5
+        [Authorize]
+        public ActionResult Edit(int id)
+        {
+            var category = _categoryRepository.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+           
+            return View(category);
+        }
 
-        // POST: Category/Edit/5
-        //[Authorize]
-        //[HttpCategory]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, CategoryCreateViewModel vm)
-        //{
-        //    try
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        vm.Category.Id = id;
-        //        vm.Category.CreateDateTime = DateTime.Now;
-        //        _categoryRepository.UpdateCategory(vm.Category);
+        //POST: Category/Edit/5
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Category category)
+        {
+            try
+            {
+                _categoryRepository.UpdateCategory(category);
 
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        vm.CategoryOptions = _categoryRepository.GetAll();
-        //        return View(vm);
-        //    }
-        //}
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(category);
+            }
+        }
 
         // GET: CategoryController/Delete/5
         [Authorize]
