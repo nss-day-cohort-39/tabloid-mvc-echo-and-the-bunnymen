@@ -17,6 +17,7 @@ namespace TabloidMVC.Controllers
         private readonly PostRepository _postRepository;
         private readonly CategoryRepository _categoryRepository;
         private readonly UserProfileRepository _userProfileRepository;
+        private readonly TagRepository _tagRepository;
 
 
         public PostController(IConfiguration config)
@@ -24,6 +25,7 @@ namespace TabloidMVC.Controllers
             _postRepository = new PostRepository(config);
             _categoryRepository = new CategoryRepository(config);
             _userProfileRepository = new UserProfileRepository(config);
+            _tagRepository = new TagRepository(config);
         }
 
         public IActionResult Index()
@@ -43,6 +45,20 @@ namespace TabloidMVC.Controllers
         public IActionResult Details(int id)
         {
             var post = _postRepository.GetPublisedPostById(id);
+            var postTags = _tagRepository.GetPostTagsByPostId(id);
+            var tags = new List<Tag>();
+            foreach (PostTag pt in postTags)
+            {
+                Tag tag = _tagRepository.GetTagById(pt.TagId);
+                tags.Add(tag);
+            }
+            PostTagViewModel vm = new PostTagViewModel
+            {
+                Post = post,
+                PostTagList = postTags,
+                TagOptions = tags
+            };
+            
             if (post == null)
             {
                 int userId = GetCurrentUserProfileId();
@@ -52,7 +68,7 @@ namespace TabloidMVC.Controllers
                     return NotFound();
                 }
             }
-            return View(post);
+            return View(vm);
         }
 
         public IActionResult Create()
@@ -151,6 +167,42 @@ namespace TabloidMVC.Controllers
             catch
             {
                 return View(post);
+            }
+        }
+
+
+
+        public ActionResult Add(int id)
+        {
+            Post post = _postRepository.GetPublisedPostById(id);
+            List<Tag> tags = _tagRepository.GetAll();
+
+            PostTagViewModel vm = new PostTagViewModel();
+            vm.TagOptions = tags;
+            vm.Post = post;
+            vm.PostTag = new PostTag();
+            vm.PostTag.PostId = post.Id;
+            return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult Add(PostTagViewModel vm, int id)
+        {
+            try
+            {
+            int userId = GetCurrentUserProfileId();
+                vm.PostTag.PostId = id;
+            
+            //Post post = _postRepository.GetUserPostById(id, userId);
+            _tagRepository.InsertTag(vm.PostTag);
+
+                return RedirectToAction("Details", new { id = id });
+
+            }
+            catch
+            {
+                //List<Tag> tags = _tagRepository.GetAll();
+                return View(vm);
             }
         }
 

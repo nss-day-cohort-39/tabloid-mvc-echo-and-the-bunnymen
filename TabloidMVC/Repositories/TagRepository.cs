@@ -113,7 +113,7 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-            
+
         public void DeleteTag(int tagId)
         {
             using (SqlConnection conn = Connection)
@@ -130,6 +130,57 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@id", tagId);
 
                     cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void InsertTag(PostTag postTag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO PostTag ( PostId, TagId )
+                                                     VALUES ( @postId, @tagId )";
+                    cmd.Parameters.AddWithValue("@postId", postTag.PostId);
+                    cmd.Parameters.AddWithValue("@tagId", postTag.TagId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public List<PostTag> GetPostTagsByPostId(int postId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, PostId, TagId
+                        FROM PostTag
+                        WHERE PostId = @postId";
+
+                    cmd.Parameters.AddWithValue("@postId", postId);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<PostTag> postTags = new List<PostTag>();
+
+                    while (reader.Read())
+                    {
+                        var postTag = new PostTag()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            PostId = reader.GetInt32(reader.GetOrdinal("PostId")),
+                            TagId = reader.GetInt32(reader.GetOrdinal("TagId"))
+                        };
+
+                        postTags.Add(postTag);
+                    }
+
+                    reader.Close();
+                    return postTags;
                 }
             }
         }
