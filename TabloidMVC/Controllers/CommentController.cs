@@ -16,12 +16,14 @@ namespace TabloidMVC.Controllers
         private readonly CommentRepository _commentRepository;
         private readonly CategoryRepository _categoryRepository;
         private readonly UserProfileRepository _userProfileRepository;
+        private readonly PostRepository _postRepository;
 
 
         public CommentController(IConfiguration config)
         {
             _commentRepository = new CommentRepository(config);
             _userProfileRepository = new UserProfileRepository(config);
+            _postRepository = new PostRepository(config);
         }
 
         public IActionResult Index(int id)
@@ -29,6 +31,8 @@ namespace TabloidMVC.Controllers
             CommentCreateViewModel vm = new CommentCreateViewModel();
             var comments = _commentRepository.GetCommentByPostId(id);
             vm.Comment = comments;
+            Post postId = _postRepository.GetPublisedPostById(id);
+            vm.CommentPost = postId;
             return View(vm);
         }
 
@@ -40,23 +44,23 @@ namespace TabloidMVC.Controllers
             return View(userComment);
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
-            var vm = new Comment();
-            return View(vm);
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Comment comment)
+        public IActionResult Create(Comment comment, int id)
         {
             try
             {
                 comment.CreateDateTime = DateAndTime.Now;
                 comment.UserProfileId = GetCurrentUserProfileId();
+                comment.PostId = id;
 
                 _commentRepository.Add(comment);
 
-                return RedirectToAction("Details", new { id = comment.Id });
+                return RedirectToAction("Index", new { id = comment.Id });
             }
             catch
             {

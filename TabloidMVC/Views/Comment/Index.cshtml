@@ -7,7 +7,7 @@
 <h1>@Html.DisplayNameFor(model => model.CommentPost.Title)</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-controller="Comment" asp-action="Create" asp-route-id="@Model.CommentPost.Id">Create New</a>
 </p>
 <table class="table">
     <thead>
